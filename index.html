@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Image Generator</title>
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px;
+    }
+
+    h1 {
+        color: #8a2be2;
+        margin-bottom: 20px;
+        font-size: 32px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 600px;
+        background: #111;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #333;
+        box-shadow: 0px 0px 20px #8a2be2;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: none;
+        margin-bottom: 10px;
+        background: #222;
+        color: #fff;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        background: #8a2be2;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: white;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #a855f7;
+    }
+
+    img {
+        width: 100%;
+        margin-top: 20px;
+        border-radius: 10px;
+        border: 2px solid #8a2be2;
+        display: none;
+    }
+
+    .loading {
+        text-align: center;
+        margin-top: 15px;
+        color: #8a2be2;
+        font-size: 18px;
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<h1>AI Image Generator</h1>
+
+<div class="container">
+    <input id="promptInput" type="text" placeholder="Enter your prompt (e.g., space scene)">
+    <button onclick="generateImage()">Generate Image</button>
+
+    <div class="loading" id="loadingText">Generating image…</div>
+
+    <img id="resultImage" alt="Generated Image">
+</div>
+
+<script>
+function generateImage() {
+    const prompt = document.getElementById("promptInput").value;
+    const loading = document.getElementById("loadingText");
+    const image = document.getElementById("resultImage");
+
+    if (!prompt) {
+        alert("Please enter a prompt!");
+        return;
+    }
+
+    loading.style.display = "block";
+    image.style.display = "none";
+
+    fetch(https://danuz-image-gen-api.vercel.app/api/pollinations-img?prompt=${encodeURIComponent(prompt)}&model=flux)
+        .then(res => res.json())
+        .then(data => {
+            image.src = data.image_url;
+            image.style.display = "block";
+            loading.style.display = "none";
+        })
+        .catch(err => {
+            loading.style.display = "none";
+            alert("Error generating image!");
+            console.error(err);
+        });
+}
+</script>
+
+</body>
+</html>

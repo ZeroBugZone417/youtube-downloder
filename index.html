@@ -1,548 +1,212 @@
 <!DOCTYPE html>
-
-<html lang="ur">
-
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Downloader – Premium</title>
 
-  <meta charset="UTF-8">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>YOUTUBE DOWNLOADER</title>
-
-  <style>
-
-    html, body {
-
-      margin: 0;
-
-      padding: 0;
-
-      height: 100%;
-
-      background: #000;
-
-      color: #00ff88;
-
-      font-family: "Courier New", monospace;
-
-      overflow: hidden;
-
+    body {
+        margin: 0;
+        padding: 0;
+        background: #0d0d0d;
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
     }
 
-    canvas#dots {
-
-      position: fixed;
-
-      top: 0;
-
-      left: 0;
-
-      width: 100%;
-
-      height: 100%;
-
-      display: block;
-
-      z-index: 0;
-
-      background: #000;
-
+    /* Floating Neon Particles */
+    .particle {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        background: #ff004c;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #ff004c;
+        animation: float 6s infinite ease-in-out;
     }
 
-    .terminal {
+    @keyframes float {
+        0% { transform: translateY(0); opacity: 1; }
+        50% { transform: translateY(-60px); opacity: 0.4; }
+        100% { transform: translateY(0); opacity: 1; }
+    }
 
-      position: relative;
+    /* Main Container */
+    .container {
+        width: 90%;
+        max-width: 550px;
+        margin: auto;
+        margin-top: 7vh;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 0, 76, 0.4);
+        border-radius: 16px;
+        padding: 25px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 25px #ff004c55;
+        animation: fadeIn 1.2s ease;
+    }
 
-      z-index: 2;
-
-      width: 90%;
-
-      max-width: 500px;
-
-      background: rgba(0, 0, 0, 0.85);
-
-      border: 2px solid #00ff88;
-
-      border-radius: 10px;
-
-      padding: 20px;
-
-      margin: auto;
-
-      margin-top: 6vh;
-
-      box-shadow: 0 0 20px #00ff88;
-
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(25px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     h1 {
-
-      text-align: center;
-
-      color: #00ff88;
-
-      text-shadow: 0 0 10px #00ff88;
-
-      font-size: 1.2rem;
-
-      margin-bottom: 20px;
-
+        text-align: center;
+        color: #ff003c;
+        font-weight: 600;
+        text-shadow: 0 0 15px #ff003c;
+        margin-bottom: 25px;
     }
 
     input {
-
-      width: 100%;
-
-      background: #000;
-
-      border: 1px solid #00ff88;
-
-      color: #00ff88;
-
-      padding: 10px;
-
-      border-radius: 5px;
-
-      margin-bottom: 15px;
-
-      font-size: 1rem;
-
-    }
-
-    .buttons {
-
-      display: flex;
-
-      justify-content: space-between;
-
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #ff003c;
+        background: #000;
+        color: #fff;
+        font-size: 1rem;
+        margin-bottom: 15px;
+        outline: none;
+        box-shadow: 0 0 12px #ff003c55;
     }
 
     button {
-
-      background: transparent;
-
-      border: 1px solid #00ff88;
-
-      color: #00ff88;
-
-      padding: 10px;
-
-      width: 48%;
-
-      border-radius: 5px;
-
-      cursor: pointer;
-
-      transition: 0.2s;
-
+        width: 48%;
+        padding: 12px;
+        border: none;
+        background: linear-gradient(90deg, #ff003c, #d100ff);
+        color: white;
+        font-size: 1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 0 12px #ff0055aa;
     }
 
     button:hover {
-
-      background: #00ff88;
-
-      color: #000;
-
-    }
-
-    #output {
-
-      margin-top: 20px;
-
-      background: #000;
-
-      padding: 10px;
-
-      border-radius: 5px;
-
-      min-height: 60px;
-
-      font-size: 0.9rem;
-
-    }
-
-    #preview {
-
-      text-align: center;
-
-      margin-top: 15px;
-
+        transform: scale(1.05);
+        box-shadow: 0 0 20px #ff0055;
     }
 
     #preview img {
-
-      width: 100%;
-
-      border-radius: 8px;
-
-      border: 1px solid #00ff88;
-
-      margin-bottom: 10px;
-
+        width: 100%;
+        border-radius: 12px;
+        margin-top: 15px;
+        box-shadow: 0 0 15px #d100ff;
     }
 
-    #preview h3 {
-
-      color: #00ff88;
-
-      font-size: 1rem;
-
+    #output {
+        color: #ff0055;
+        margin-top: 20px;
+        font-size: 1rem;
+        padding: 10px;
+        background: rgba(255, 0, 76, 0.1);
+        border-radius: 8px;
+        text-shadow: 0 0 5px #ff0044;
     }
 
-    .whatsapp {
-
-      display: block;
-
-      background: #25d366;
-
-      color: #fff;
-
-      text-decoration: none;
-
-      padding: 10px 15px;
-
-      border-radius: 5px;
-
-      font-weight: bold;
-
-      text-align: center;
-
-      transition: 0.3s;
-
-      margin-top: 25px;
-
+    .download-btns {
+        display: none;
+        justify-content: space-between;
+        margin-top: 15px;
     }
-
-    .whatsapp:hover {
-
-      background: #128c7e;
-
-    }
-
-    .cursor {
-
-      animation: blink 1s infinite;
-
-    }
-
-    @keyframes blink {
-
-      0%, 50% { opacity: 1; }
-
-      51%, 100% { opacity: 0; }
-
-    }
-
-  </style>
-
+</style>
 </head>
 
 <body>
 
-  <canvas id="dots"></canvas>
+<!-- Floating Neon Particles -->
+<div class="particle" style="top:10%; left:20%; animation-delay:0s;"></div>
+<div class="particle" style="top:30%; left:70%; animation-delay:1s;"></div>
+<div class="particle" style="top:60%; left:40%; animation-delay:2s;"></div>
+<div class="particle" style="top:80%; left:10%; animation-delay:3s;"></div>
 
-  <div class="terminal">
+<div class="container">
+    <h1>YouTube Downloader Premium</h1>
 
-    <h1>🖤 YOUTUBE DOWNLOADER 🖤</h1>
+    <input type="text" id="videoUrl" placeholder="Paste YouTube link here...">
 
-    <input type="text" id="videoUrl" placeholder="Paste YouTube Link Here...">
-
-    <div class="buttons">
-
-      <button onclick="fetchInfo()">Fetch Info</button>
-
-    </div>
+    <button style="width:100%" onclick="fetchInfo()">
+        Fetch Video
+    </button>
 
     <div id="preview"></div>
 
-    <div id="output">> Ready... <span class="cursor">█</span></div>
+    <div id="output">Ready…</div>
 
-    <div class="buttons" id="downloadBtns" style="display:none; margin-top:15px;">
-
-      <button onclick="download('mp3')">Download MP3</button>
-
-      <button onclick="download('mp4')">Download MP4</button>
-
+    <div class="download-btns" id="downloadBtns">
+        <button onclick="downloadVideo('mp3')">Download MP3</button>
+        <button onclick="downloadVideo('mp4')">Download MP4</button>
     </div>
+</div>
 
-    <a class="whatsapp" href="https://whatsapp.com/channel/0029VbAh0KFFsn0YykW7hC2U" target="_blank">
+<script>
 
-      🔗 Join Our WhatsApp Channel
+let videoData = null;
 
-    </a>
+/* API CHANGE — NEW STABLE API */
+async function fetchInfo() {
+    const url = document.getElementById("videoUrl").value.trim();
+    const output = document.getElementById("output");
+    const preview = document.getElementById("preview");
+    const dlBtns = document.getElementById("downloadBtns");
 
-  </div>
-
-  <script>
-
-    /* === Dots + Lines Animated Background === */
-
-    const canvas = document.getElementById("dots");
-
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = window.innerWidth;
-
-    canvas.height = window.innerHeight;
-
-    // 🔹 Less dots & smoother lines
-
-    const dots = [];
-
-    const maxDots = 35; // 👈 کم dots
-
-    const maxDist = 120; // 👈 connections تھوڑے کم
-
-    class Dot {
-
-      constructor() {
-
-        this.x = Math.random() * canvas.width;
-
-        this.y = Math.random() * canvas.height;
-
-        this.vx = (Math.random() - 0.5) * 0.5;
-
-        this.vy = (Math.random() - 0.5) * 0.5;
-
-        this.size = 2;
-
-      }
-
-      move() {
-
-        this.x += this.vx;
-
-        this.y += this.vy;
-
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-
-      }
-
-      draw() {
-
-        ctx.beginPath();
-
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-
-        ctx.fillStyle = "#00ff88";
-
-        ctx.fill();
-
-      }
-
-    }
-
-    for (let i = 0; i < maxDots; i++) dots.push(new Dot());
-
-    function animateDots() {
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let dot of dots) {
-
-        dot.move();
-
-        dot.draw();
-
-        for (let other of dots) {
-
-          const dx = dot.x - other.x;
-
-          const dy = dot.y - other.y;
-
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < maxDist) {
-
-            ctx.beginPath();
-
-            ctx.moveTo(dot.x, dot.y);
-
-            ctx.lineTo(other.x, other.y);
-
-            ctx.strokeStyle = "rgba(0,255,136," + (1 - dist / maxDist) + ")";
-
-            ctx.lineWidth = 0.4;
-
-            ctx.stroke();
-
-          }
-
-        }
-
-      }
-
-      requestAnimationFrame(animateDots);
-
-    }
-
-    animateDots();
-
-    window.addEventListener("resize", () => {
-
-      canvas.width = window.innerWidth;
-
-      canvas.height = window.innerHeight;
-
-    });
-
-    /* === Terminal Logic === */
-
-    let currentVideo = null;
-
-    function analyzingSystem(output, messages, delay = 800) {
-
-      return new Promise(async (resolve) => {
-
-        for (let msg of messages) {
-
-          output.innerHTML = `> ${msg} <span class="cursor">█</span>`;
-
-          await new Promise(r => setTimeout(r, delay));
-
-        }
-
-        resolve();
-
-      });
-
-    }
-
-    async function fetchInfo() {
-
-      const url = document.getElementById('videoUrl').value.trim();
-
-      const output = document.getElementById('output');
-
-      const preview = document.getElementById('preview');
-
-      const btns = document.getElementById('downloadBtns');
-
-      if (!url) {
-
-        output.innerHTML = '> Please enter a YouTube URL <span class="cursor">█</span>';
-
+    if (!url) {
+        output.innerHTML = "❌ Please enter a YouTube URL";
         return;
-
-      }
-
-      preview.innerHTML = '';
-
-      btns.style.display = 'none';
-
-      await analyzingSystem(output, [
-
-        'Initializing System...',
-
-        'Analyzing Input...',
-
-        'Connecting to Secure Server...',
-
-        'Fetching Video Information...'
-
-      ]);
-
-      const apiUrl = `https://api.xyro.site/download/youtubemp4?url=${encodeURIComponent(url)}&format=mp4`;
-
-      try {
-
-        const res = await fetch(apiUrl);
-
-        const data = await res.json();
-
-        if (data?.result?.title) {
-
-          currentVideo = data;
-
-          preview.innerHTML = `
-
-            <img src="${data.result.thumbnail}" alt="Thumbnail">
-
-            <h3>${data.result.title}</h3>
-
-          `;
-
-          output.innerHTML = '> Video info fetched successfully ✅';
-
-          btns.style.display = 'flex';
-
-        } else {
-
-          output.innerHTML = '> Error: Video info not found ❌';
-
-        }
-
-      } catch (e) {
-
-        output.innerHTML = '> Server error occurred ❌';
-
-      }
-
     }
 
-    async function download(format) {
+    output.innerHTML = "⏳ Fetching video details…";
 
-      if (!currentVideo) return alert("Please fetch video info first!");
-
-      const url = document.getElementById('videoUrl').value.trim();
-
-      const output = document.getElementById('output');
-
-      await analyzingSystem(output, [
-
-        `Preparing ${format.toUpperCase()} file...`,
-
-        'Analyzing video structure...',
-
-        'Connecting to file server...',
-
-        'Generating secure download link...'
-
-      ]);
-
-      const apiUrl = `https://api.xyro.site/download/youtubemp4?url=${encodeURIComponent(url)}&format=${format}`;
-
-      try {
-
-        const res = await fetch(apiUrl);
-
+    try {
+        const res = await fetch(`https://api.sssgram.com/api/fetch/youtube?url=${encodeURIComponent(url)}`);
         const data = await res.json();
 
-        if (data?.result?.download) {
-
-          const a = document.createElement('a');
-
-          a.href = data.result.download;
-
-          a.download = data.result.title || `video.${format}`;
-
-          document.body.appendChild(a);
-
-          a.click();
-
-          a.remove();
-
-          output.innerHTML = `> Downloading ${format.toUpperCase()}... ✅`;
-
-        } else {
-
-          output.innerHTML = '> Error: Download link not found ❌';
-
+        if (!data || !data.data) {
+            output.innerHTML = "❌ Failed to fetch video";
+            return;
         }
 
-      } catch (e) {
+        videoData = data.data;
 
-        output.innerHTML = '> Server error occurred ❌';
+        preview.innerHTML = `
+            <img src="${videoData.thumbnail}" alt="Thumbnail">
+            <h3 style="color:#ff0055">${videoData.title}</h3>
+        `;
 
-      }
-
+        dlBtns.style.display = "flex";
+        output.innerHTML = "✅ Video loaded successfully";
+    } 
+    catch (err) {
+        output.innerHTML = "❌ Server error";
     }
+}
 
-  </script>
+async function downloadVideo(type) {
+    if (!videoData) return;
+
+    const output = document.getElementById("output");
+    output.innerHTML = `⏳ Preparing ${type.toUpperCase()}…`;
+
+    let link = type === "mp3"
+        ? videoData.audio.high
+        : videoData.video.medium;
+
+    const a = document.createElement("a");
+    a.href = link;
+    a.download = videoData.title + "." + type;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    output.innerHTML = `⬇️ Download started (${type.toUpperCase()})`;
+}
+
+</script>
 </body>
-
 </html>

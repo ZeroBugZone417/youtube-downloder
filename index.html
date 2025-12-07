@@ -1,120 +1,548 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="ur">
+
 <head>
-<meta charset="UTF-8">
-<title>AI Image Generator</title>
-<style>
-    body {
-        background-color: #000;
-        color: #fff;
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 40px;
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>YOUTUBE DOWNLOADER</title>
+
+  <style>
+
+    html, body {
+
+      margin: 0;
+
+      padding: 0;
+
+      height: 100%;
+
+      background: #000;
+
+      color: #00ff88;
+
+      font-family: "Courier New", monospace;
+
+      overflow: hidden;
+
+    }
+
+    canvas#dots {
+
+      position: fixed;
+
+      top: 0;
+
+      left: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      display: block;
+
+      z-index: 0;
+
+      background: #000;
+
+    }
+
+    .terminal {
+
+      position: relative;
+
+      z-index: 2;
+
+      width: 90%;
+
+      max-width: 500px;
+
+      background: rgba(0, 0, 0, 0.85);
+
+      border: 2px solid #00ff88;
+
+      border-radius: 10px;
+
+      padding: 20px;
+
+      margin: auto;
+
+      margin-top: 6vh;
+
+      box-shadow: 0 0 20px #00ff88;
+
     }
 
     h1 {
-        color: #8a2be2;
-        margin-bottom: 20px;
-        font-size: 32px;
-    }
 
-    .container {
-        width: 100%;
-        max-width: 600px;
-        background: #111;
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid #333;
-        box-shadow: 0px 0px 20px #8a2be2;
+      text-align: center;
+
+      color: #00ff88;
+
+      text-shadow: 0 0 10px #00ff88;
+
+      font-size: 1.2rem;
+
+      margin-bottom: 20px;
+
     }
 
     input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 6px;
-        border: none;
-        margin-bottom: 10px;
-        background: #222;
-        color: #fff;
-        font-size: 16px;
+
+      width: 100%;
+
+      background: #000;
+
+      border: 1px solid #00ff88;
+
+      color: #00ff88;
+
+      padding: 10px;
+
+      border-radius: 5px;
+
+      margin-bottom: 15px;
+
+      font-size: 1rem;
+
+    }
+
+    .buttons {
+
+      display: flex;
+
+      justify-content: space-between;
+
     }
 
     button {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        background: #8a2be2;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        color: white;
-        transition: 0.3s;
+
+      background: transparent;
+
+      border: 1px solid #00ff88;
+
+      color: #00ff88;
+
+      padding: 10px;
+
+      width: 48%;
+
+      border-radius: 5px;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+
     }
 
     button:hover {
-        background: #a855f7;
+
+      background: #00ff88;
+
+      color: #000;
+
     }
 
-    img {
-        width: 100%;
-        margin-top: 20px;
-        border-radius: 10px;
-        border: 2px solid #8a2be2;
-        display: none;
+    #output {
+
+      margin-top: 20px;
+
+      background: #000;
+
+      padding: 10px;
+
+      border-radius: 5px;
+
+      min-height: 60px;
+
+      font-size: 0.9rem;
+
     }
 
-    .loading {
-        text-align: center;
-        margin-top: 15px;
-        color: #8a2be2;
-        font-size: 18px;
-        display: none;
+    #preview {
+
+      text-align: center;
+
+      margin-top: 15px;
+
     }
-</style>
+
+    #preview img {
+
+      width: 100%;
+
+      border-radius: 8px;
+
+      border: 1px solid #00ff88;
+
+      margin-bottom: 10px;
+
+    }
+
+    #preview h3 {
+
+      color: #00ff88;
+
+      font-size: 1rem;
+
+    }
+
+    .whatsapp {
+
+      display: block;
+
+      background: #25d366;
+
+      color: #fff;
+
+      text-decoration: none;
+
+      padding: 10px 15px;
+
+      border-radius: 5px;
+
+      font-weight: bold;
+
+      text-align: center;
+
+      transition: 0.3s;
+
+      margin-top: 25px;
+
+    }
+
+    .whatsapp:hover {
+
+      background: #128c7e;
+
+    }
+
+    .cursor {
+
+      animation: blink 1s infinite;
+
+    }
+
+    @keyframes blink {
+
+      0%, 50% { opacity: 1; }
+
+      51%, 100% { opacity: 0; }
+
+    }
+
+  </style>
+
 </head>
+
 <body>
 
-<h1>AI Image Generator</h1>
+  <canvas id="dots"></canvas>
 
-<div class="container">
-    <input id="promptInput" type="text" placeholder="Enter your prompt (e.g., space scene)">
-    <button onclick="generateImage()">Generate Image</button>
+  <div class="terminal">
 
-    <div class="loading" id="loadingText">Generating image…</div>
+    <h1>🖤 YOUTUBE DOWNLOADER 🖤</h1>
 
-    <img id="resultImage" alt="Generated Image">
-</div>
+    <input type="text" id="videoUrl" placeholder="Paste YouTube Link Here...">
 
-<script>
-function generateImage() {
-    const prompt = document.getElementById("promptInput").value;
-    const loading = document.getElementById("loadingText");
-    const image = document.getElementById("resultImage");
+    <div class="buttons">
 
-    if (!prompt) {
-        alert("Please enter a prompt!");
-        return;
+      <button onclick="fetchInfo()">Fetch Info</button>
+
+    </div>
+
+    <div id="preview"></div>
+
+    <div id="output">> Ready... <span class="cursor">█</span></div>
+
+    <div class="buttons" id="downloadBtns" style="display:none; margin-top:15px;">
+
+      <button onclick="download('mp3')">Download MP3</button>
+
+      <button onclick="download('mp4')">Download MP4</button>
+
+    </div>
+
+    <a class="whatsapp" href="https://whatsapp.com/channel/0029VbAh0KFFsn0YykW7hC2U" target="_blank">
+
+      🔗 Join Our WhatsApp Channel
+
+    </a>
+
+  </div>
+
+  <script>
+
+    /* === Dots + Lines Animated Background === */
+
+    const canvas = document.getElementById("dots");
+
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+
+    canvas.height = window.innerHeight;
+
+    // 🔹 Less dots & smoother lines
+
+    const dots = [];
+
+    const maxDots = 35; // 👈 کم dots
+
+    const maxDist = 120; // 👈 connections تھوڑے کم
+
+    class Dot {
+
+      constructor() {
+
+        this.x = Math.random() * canvas.width;
+
+        this.y = Math.random() * canvas.height;
+
+        this.vx = (Math.random() - 0.5) * 0.5;
+
+        this.vy = (Math.random() - 0.5) * 0.5;
+
+        this.size = 2;
+
+      }
+
+      move() {
+
+        this.x += this.vx;
+
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+      }
+
+      draw() {
+
+        ctx.beginPath();
+
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+
+        ctx.fillStyle = "#00ff88";
+
+        ctx.fill();
+
+      }
+
     }
 
-    loading.style.display = "block";
-    image.style.display = "none";
+    for (let i = 0; i < maxDots; i++) dots.push(new Dot());
 
-    fetch(https://danuz-image-gen-api.vercel.app/api/pollinations-img?prompt=${encodeURIComponent(prompt)}&model=flux)
-        .then(res => res.json())
-        .then(data => {
-            image.src = data.image_url;
-            image.style.display = "block";
-            loading.style.display = "none";
-        })
-        .catch(err => {
-            loading.style.display = "none";
-            alert("Error generating image!");
-            console.error(err);
-        });
-}
-</script>
+    function animateDots() {
 
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let dot of dots) {
+
+        dot.move();
+
+        dot.draw();
+
+        for (let other of dots) {
+
+          const dx = dot.x - other.x;
+
+          const dy = dot.y - other.y;
+
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxDist) {
+
+            ctx.beginPath();
+
+            ctx.moveTo(dot.x, dot.y);
+
+            ctx.lineTo(other.x, other.y);
+
+            ctx.strokeStyle = "rgba(0,255,136," + (1 - dist / maxDist) + ")";
+
+            ctx.lineWidth = 0.4;
+
+            ctx.stroke();
+
+          }
+
+        }
+
+      }
+
+      requestAnimationFrame(animateDots);
+
+    }
+
+    animateDots();
+
+    window.addEventListener("resize", () => {
+
+      canvas.width = window.innerWidth;
+
+      canvas.height = window.innerHeight;
+
+    });
+
+    /* === Terminal Logic === */
+
+    let currentVideo = null;
+
+    function analyzingSystem(output, messages, delay = 800) {
+
+      return new Promise(async (resolve) => {
+
+        for (let msg of messages) {
+
+          output.innerHTML = `> ${msg} <span class="cursor">█</span>`;
+
+          await new Promise(r => setTimeout(r, delay));
+
+        }
+
+        resolve();
+
+      });
+
+    }
+
+    async function fetchInfo() {
+
+      const url = document.getElementById('videoUrl').value.trim();
+
+      const output = document.getElementById('output');
+
+      const preview = document.getElementById('preview');
+
+      const btns = document.getElementById('downloadBtns');
+
+      if (!url) {
+
+        output.innerHTML = '> Please enter a YouTube URL <span class="cursor">█</span>';
+
+        return;
+
+      }
+
+      preview.innerHTML = '';
+
+      btns.style.display = 'none';
+
+      await analyzingSystem(output, [
+
+        'Initializing System...',
+
+        'Analyzing Input...',
+
+        'Connecting to Secure Server...',
+
+        'Fetching Video Information...'
+
+      ]);
+
+      const apiUrl = `https://api.xyro.site/download/youtubemp4?url=${encodeURIComponent(url)}&format=mp4`;
+
+      try {
+
+        const res = await fetch(apiUrl);
+
+        const data = await res.json();
+
+        if (data?.result?.title) {
+
+          currentVideo = data;
+
+          preview.innerHTML = `
+
+            <img src="${data.result.thumbnail}" alt="Thumbnail">
+
+            <h3>${data.result.title}</h3>
+
+          `;
+
+          output.innerHTML = '> Video info fetched successfully ✅';
+
+          btns.style.display = 'flex';
+
+        } else {
+
+          output.innerHTML = '> Error: Video info not found ❌';
+
+        }
+
+      } catch (e) {
+
+        output.innerHTML = '> Server error occurred ❌';
+
+      }
+
+    }
+
+    async function download(format) {
+
+      if (!currentVideo) return alert("Please fetch video info first!");
+
+      const url = document.getElementById('videoUrl').value.trim();
+
+      const output = document.getElementById('output');
+
+      await analyzingSystem(output, [
+
+        `Preparing ${format.toUpperCase()} file...`,
+
+        'Analyzing video structure...',
+
+        'Connecting to file server...',
+
+        'Generating secure download link...'
+
+      ]);
+
+      const apiUrl = `https://api.xyro.site/download/youtubemp4?url=${encodeURIComponent(url)}&format=${format}`;
+
+      try {
+
+        const res = await fetch(apiUrl);
+
+        const data = await res.json();
+
+        if (data?.result?.download) {
+
+          const a = document.createElement('a');
+
+          a.href = data.result.download;
+
+          a.download = data.result.title || `video.${format}`;
+
+          document.body.appendChild(a);
+
+          a.click();
+
+          a.remove();
+
+          output.innerHTML = `> Downloading ${format.toUpperCase()}... ✅`;
+
+        } else {
+
+          output.innerHTML = '> Error: Download link not found ❌';
+
+        }
+
+      } catch (e) {
+
+        output.innerHTML = '> Server error occurred ❌';
+
+      }
+
+    }
+
+  </script>
 </body>
+
 </html>

@@ -23,10 +23,9 @@
     radial-gradient(900px 500px at 90% 90%, rgba(255,0,68,0.05), transparent 8%),
     var(--bg); color:#fff; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
 
-  .wrap{width:94%; max-width:980px; margin:40px auto; display:grid; grid-template-columns: 1fr 360px; gap:24px; align-items:start;}
-  @media (max-width:900px){ .wrap{grid-template-columns:1fr; padding-bottom:40px;} }
+  .wrap{width:94%; max-width:980px; margin:40px auto;}
+  @media (max-width:900px){ .wrap{padding-bottom:40px;} }
 
-  /* Left - Main */
   .card{
     background:var(--card);
     border-radius:14px;
@@ -65,10 +64,8 @@
     border:0; padding:10px 14px; border-radius:10px; cursor:pointer; color:#fff;
     font-weight:600; box-shadow:0 8px 24px rgba(255,0,76,0.12);
   }
-  .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); box-shadow:none; }
 
-  /* Results list */
-  .results{margin-top:16px; display:flex; flex-direction:column; gap:12px; max-height:60vh; overflow:auto; padding-right:6px;}
+  .results{margin-top:16px; display:flex; flex-direction:column; gap:12px; max-height:70vh; overflow:auto; padding-right:6px;}
   .resultItem{display:flex; gap:12px; align-items:center; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border-radius:10px; padding:10px; border:1px solid rgba(255,255,255,0.02);}
   .resultThumb{width:110px; height:62px; border-radius:8px; overflow:hidden; flex-shrink:0; background:#111;}
   .resultMeta{flex:1}
@@ -78,39 +75,22 @@
   .smallBtn{padding:8px 10px; border-radius:8px; border:0; cursor:pointer; font-weight:600; font-size:13px;}
   .smallBtn.mp3{background:linear-gradient(90deg,#00c853,#00e676); color:#030;}
   .smallBtn.mp4{background:linear-gradient(90deg,#2196f3,#7c4dff); color:#fff;}
-  .smallBtn.info{background:rgba(255,255,255,0.03); color:var(--muted); border:1px solid rgba(255,255,255,0.02);}
-
-  /* Right - Preview / download panel */
-  .side{position:sticky; top:24px; height:fit-content;}
-  .previewCard{display:flex; flex-direction:column; gap:12px; align-items:center; text-align:center;}
-  .previewThumb{width:100%; height:200px; border-radius:12px; overflow:hidden; background:#111;}
-  .previewThumb img{width:100%; height:100%; object-fit:cover;}
-  .previewTitle{font-weight:700; margin:0; font-size:16px;}
-  .previewSub{color:var(--muted); font-size:13px;}
-  .downloadArea{display:flex; gap:10px; width:100%; margin-top:8px;}
-  .downloadArea button{flex:1; padding:12px; border-radius:10px; border:0; font-weight:700; cursor:pointer;}
-  .downloadMP3{background:linear-gradient(90deg,#00e676,#00bfa5); color:#033;}
-  .downloadMP4{background:linear-gradient(90deg,#ff0044,#8a00ff); color:#fff;}
 
   .log{margin-top:14px; font-family:monospace; font-size:13px; color:var(--muted); background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; min-height:46px; overflow:auto;}
 
   footer.foot{opacity:0.7; margin-top:14px; font-size:13px; color:var(--muted); text-align:center;}
-  a.wh{display:inline-block; margin-top:12px; text-decoration:none; background:#25D366; color:#fff; padding:8px 14px; border-radius:10px; font-weight:700;}
-
-  /* subtle neon outlines */
   .glow{box-shadow:0 8px 36px rgba(138,0,255,0.06), 0 0 30px rgba(255,0,76,0.04);}
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  <!-- MAIN -->
   <div class="card glow">
     <header class="site">
       <div class="logo">YT</div>
       <div class="title">
         <h1>YouTube Downloader — Premium</h1>
-        <p>Search, preview & download MP3 / MP4 — Dark Neon UI</p>
+        <p>Search & download MP3 / MP4 — Dark Neon UI</p>
       </div>
     </header>
 
@@ -125,274 +105,90 @@
     <div id="results" class="results" aria-live="polite"></div>
 
     <div class="log" id="log">Ready…</div>
-    <footer class="foot">© POWERD BY BLACK MATRIX DEV —Developed by Dineth Sudarshana</footer>
+    <footer class="foot">© POWERD BY BLACK MATRIX DEV — Developed by Dineth Sudarshana</footer>
   </div>
-
-  <!-- SIDE PREVIEW -->
-  <aside class="side">
-    <div class="card previewCard">
-      <div class="previewThumb" id="previewThumb"><img src="" alt="" id="previewImg" style="display:none"/></div>
-      <div>
-        <h3 class="previewTitle" id="previewTitle">No video selected</h3>
-        <div class="previewSub" id="previewMeta">Paste a URL or search to begin</div>
-      </div>
-
-      <div class="downloadArea">
-        <button class="downloadMP3" id="btnMP3" disabled>Download MP3</button>
-        <button class="downloadMP4" id="btnMP4" disabled>Download MP4</button>
-      </div>
-
-      <a class="wh" id="whLink" target="_blank" href="https://whatsapp.com/channel/0029Vb9LTRHInlqISdCfln45">Join WhatsApp Channel</a>
-    </div>
-  </aside>
 </div>
 
 <script>
-
 const resultsEl = document.getElementById('results');
 const logEl = document.getElementById('log');
 const qEl = document.getElementById('q');
 const searchBtn = document.getElementById('searchBtn');
-
-const previewImg = document.getElementById('previewImg');
-const previewTitle = document.getElementById('previewTitle');
-const previewMeta = document.getElementById('previewMeta');
-const btnMP3 = document.getElementById('btnMP3');
-const btnMP4 = document.getElementById('btnMP4');
-
-let current = null; // holds selected video object
 
 function log(msg, err=false){
   const time = new Date().toLocaleTimeString();
   logEl.innerText = `[${time}] ${msg}` + (err ? " ⚠️" : "");
 }
 
-function sanitizeText(s, max=80){
-  if(!s) return "";
-  return s.length>max ? s.slice(0,max-1) + "…" : s;
-}
+function sanitizeText(s, max=80){ return s?.length>max ? s.slice(0,max-1)+'…':s; }
 
 async function searchYT(query){
-  // attempt primary API (from bot code)
   const api1 = `https://tharuzz-ofc-apis.vercel.app/api/search/ytsearch?query=${encodeURIComponent(query)}`;
-
-  try {
-    log('Searching (primary API)...');
+  try{
+    log('Searching...');
     const res = await fetch(api1);
-    if(!res.ok) throw new Error('primary API failed');
+    if(!res.ok) throw new Error('API failed');
     const data = await res.json();
-    if(!data || !data.result || !Array.isArray(data.result) || data.result.length===0) throw new Error('no results');
-    return data.result.map(item => ({
-      title: item.title || item.name || "Unknown",
-      url: item.url || item.link || item.videoUrl || item.id,
-      thumbnail: item.thumbnail || item.image || item.thumb,
-      duration: item.timestamp || item.seconds || item.duration || "Unknown",
-      views: item.views || item.viewCount || "N/A",
-      published: item.ago || item.published || ""
+    if(!data?.result?.length) throw new Error('No results');
+    return data.result.map(item=>({
+      title: item.title || "Unknown",
+      url: item.url || item.id,
+      thumbnail: item.thumbnail || item.thumb,
+      duration: item.timestamp || item.duration || "Unknown",
+      views: item.views || "N/A",
+      published: item.ago || ""
     }));
-  } catch (e) {
-    log('Primary search failed, trying fallback...', true);
-    // fallback: pawan.krd search (we use info endpoint per query by trying ytdl info)
-    try {
-      const fb = `https://yt-api.pawan.krd/api/info?url=${encodeURIComponent(query.includes('youtube') ? query : 'https://www.youtube.com/results?search_query=' + query)}`;
-      const r2 = await fetch(fb);
-      if(!r2.ok) throw new Error('fallback info failed');
-      const d2 = await r2.json();
-      // if the query was search term, pawan.krd info won't work — so attempt search via yt-search via another public endpoint is not available
-      // We'll try to interpret d2 if it's direct video info
-      if(d2 && d2.title){
-        return [{
-          title: d2.title,
-          url: d2.url || query,
-          thumbnail: d2.thumbnail,
-          duration: d2.duration,
-          views: d2.views || "N/A",
-          published: d2.published || ""
-        }];
-      }
-      throw new Error('no fallback results');
-    } catch (err){
-      log('Fallback search failed — no results', true);
-      return [];
-    }
-  }
+  }catch(e){ log('Search failed', true); return []; }
 }
 
-async function fetchDownloadUrl(videoUrl, format='mp3'){
-  // primary download API from bot code
-  const apiMp = `https://tharuzz-ofc-api-v3.vercel.app/api/ytdl/yt?url=${encodeURIComponent(videoUrl)}&format=${format}`;
-  try {
-    log(`Requesting download link (primary: ${format})...`);
-    const r = await fetch(apiMp);
-    if(!r.ok) throw new Error('primary download API failed');
-    const d = await r.json();
-    // expected structure: { result: { download: 'url' } } per bot code
-    if(d && d.result && d.result.download) return d.result.download;
-    // some APIs may return direct field
-    if(d && d.download) return d.download;
-    throw new Error('no download url in primary response');
-  } catch (e) {
-    log('Primary download failed, trying fallback (pawan)...', true);
-    // fallback: pawan.krd
-    try {
-      if(format === 'mp3'){
-        const fb = `https://yt-api.pawan.krd/api/ytmp3?url=${encodeURIComponent(videoUrl)}`;
-        const r2 = await fetch(fb);
-        if(!r2.ok) throw new Error('fallback mp3 failed');
-        const d2 = await r2.json();
-        if(d2 && d2.download_url) return d2.download_url;
-      } else {
-        const fb = `https://yt-api.pawan.krd/api/ytmp4?url=${encodeURIComponent(videoUrl)}`;
-        const r2 = await fetch(fb);
-        if(!r2.ok) throw new Error('fallback mp4 failed');
-        const d2 = await r2.json();
-        if(d2 && d2.download_url) return d2.download_url;
-      }
-    } catch (err){
-      log('Fallback download failed as well.', true);
-      throw err;
-    }
-  }
-}
-
-// Render search results
 function renderResults(list){
   resultsEl.innerHTML = '';
-  if(!list || list.length===0){
-    resultsEl.innerHTML = '<div style="color:var(--muted)">No results found.</div>';
-    return;
-  }
-  list.forEach((it, idx) => {
-    const item = document.createElement('div');
-    item.className = 'resultItem';
-    item.innerHTML = `
-      <div class="resultThumb"><img src="${it.thumbnail || ''}" alt="" style="width:100%;height:100%;object-fit:cover" /></div>
+  if(!list.length){ resultsEl.innerHTML='<div style="color:var(--muted)">No results found.</div>'; return; }
+  list.forEach((it, idx)=>{
+    const item=document.createElement('div');
+    item.className='resultItem';
+    item.innerHTML=`<div class="resultThumb"><img src="${it.thumbnail}" style="width:100%;height:100%;object-fit:cover"/></div>
       <div class="resultMeta">
-        <h4 title="${it.title}">${sanitizeText(it.title, 80)}</h4>
+        <h4 title="${it.title}">${sanitizeText(it.title,80)}</h4>
         <p>${it.duration} • ${it.views} • ${it.published}</p>
       </div>
       <div class="resultActions">
-        <button class="smallBtn info" data-idx="${idx}">Preview</button>
-        <button class="smallBtn mp3" data-type="mp3" data-idx="${idx}">MP3</button>
-        <button class="smallBtn mp4" data-type="mp4" data-idx="${idx}">MP4</button>
-      </div>
-    `;
+        <button class="smallBtn mp3" data-idx="${idx}">MP3</button>
+        <button class="smallBtn mp4" data-idx="${idx}">MP4</button>
+      </div>`;
     resultsEl.appendChild(item);
   });
+  document.querySelectorAll('.smallBtn.mp3').forEach(btn=>{
+    btn.onclick=async ()=>{
+      const v=list[parseInt(btn.dataset.idx)];
+      try{
+        const dl=`https://yt-api.pawan.krd/api/ytmp3?url=${encodeURIComponent(v.url)}`;
+        const a=document.createElement('a'); a.href=dl; a.download=(v.title||'song')+'.mp3'; a.click();
+        log('MP3 download started.');
+      }catch(e){ log('Download failed',true); }
+    };
+  });
+  document.querySelectorAll('.smallBtn.mp4').forEach(btn=>{
+    btn.onclick=async ()=>{
+      const v=list[parseInt(btn.dataset.idx)];
+      try{
+        const dl=`https://yt-api.pawan.krd/api/ytmp4?url=${encodeURIComponent(v.url)}`;
+        const a=document.createElement('a'); a.href=dl; a.download=(v.title||'video')+'.mp4'; a.click();
+        log('MP4 download started.');
+      }catch(e){ log('Download failed',true); }
+    };
+  });
 }
 
-// select item by index
-function selectItem(list, i){
-  current = list[i];
-  if(!current) return;
-  previewImg.src = current.thumbnail || '';
-  previewImg.style.display = current.thumbnail ? 'block' : 'none';
-  previewTitle.textContent = current.title;
-  previewMeta.textContent = `${current.duration} • ${current.views} • ${current.published}`;
-  btnMP3.disabled = false;
-  btnMP4.disabled = false;
-  btnMP3.dataset.url = current.url;
-  btnMP4.dataset.url = current.url;
-}
-
-searchBtn.addEventListener('click', async ()=>{
-  const q = qEl.value.trim();
-  if(!q) return log('Enter search term or paste YouTube URL!');
-  resultsEl.innerHTML = '<div style="color:var(--muted)">Searching…</div>';
-  const list = await searchYT(q);
+searchBtn.addEventListener('click',async ()=>{
+  const q=qEl.value.trim(); if(!q) return log('Enter search term or paste YouTube URL!');
+  resultsEl.innerHTML='<div style="color:var(--muted)">Searching…</div>';
+  const list=await searchYT(q);
   renderResults(list);
-  // attach handlers
-  document.querySelectorAll('.resultActions .info').forEach(btn=>{
-    btn.onclick = (ev)=> {
-      const idx = parseInt(btn.dataset.idx);
-      selectItem(list, idx);
-      log('Preview selected.');
-      // scroll to preview
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-  });
-  document.querySelectorAll('.resultActions .mp3').forEach(btn=>{
-    btn.onclick = async (ev)=> {
-      const idx = parseInt(btn.dataset.idx);
-      const v = list[idx];
-      try {
-        log('Preparing MP3 download...');
-        const dl = await fetchDownloadUrl(v.url, 'mp3');
-        if(dl){
-          log('Starting MP3 download...');
-          const a = document.createElement('a');
-          a.href = dl;
-          a.download = (v.title || 'song') + '.mp3';
-          a.target = '_blank';
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-        }
-      } catch (e) {
-        log('Download failed: ' + e.message, true);
-        alert('Download failed. See log for details.');
-      }
-    };
-  });
-  document.querySelectorAll('.resultActions .mp4').forEach(btn=>{
-    btn.onclick = async (ev)=> {
-      const idx = parseInt(btn.dataset.idx);
-      const v = list[idx];
-      try {
-        log('Preparing MP4 download...');
-        const dl = await fetchDownloadUrl(v.url, 'mp4');
-        if(dl){
-          log('Starting MP4 download...');
-          const a = document.createElement('a');
-          a.href = dl;
-          a.download = (v.title || 'video') + '.mp4';
-          a.target = '_blank';
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-        }
-      } catch (e) {
-        log('Download failed: ' + e.message, true);
-        alert('Download failed. See log for details.');
-      }
-    };
-  });
 });
 
-// side buttons
-btnMP3.addEventListener('click', async ()=>{
-  if(!btnMP3.dataset.url) return;
-  try {
-    log('Preparing MP3 download (side)...');
-    const dl = await fetchDownloadUrl(btnMP3.dataset.url, 'mp3');
-    const a = document.createElement('a');
-    a.href = dl;
-    a.download = (current.title || 'song') + '.mp3';
-    a.target = '_blank';
-    document.body.appendChild(a); a.click(); a.remove();
-    log('MP3 download started.');
-  } catch (e) { log('Download error: ' + e.message, true); alert('Download failed'); }
-});
-
-btnMP4.addEventListener('click', async ()=>{
-  if(!btnMP4.dataset.url) return;
-  try {
-    log('Preparing MP4 download (side)...');
-    const dl = await fetchDownloadUrl(btnMP4.dataset.url, 'mp4');
-    const a = document.createElement('a');
-    a.href = dl;
-    a.download = (current.title || 'video') + '.mp4';
-    a.target = '_blank';
-    document.body.appendChild(a); a.click(); a.remove();
-    log('MP4 download started.');
-  } catch (e) { log('Download error: ' + e.message, true); alert('Download failed'); }
-});
-
-// handle enter key
-qEl.addEventListener('keydown', (e)=> { if(e.key==='Enter') searchBtn.click(); });
-
-// initial sample (optional)
+qEl.addEventListener('keydown',e=>{ if(e.key==='Enter') searchBtn.click(); });
 log('Ready. Paste a YouTube link or search a song.');
 </script>
 </body>
-</html>    
+</html>

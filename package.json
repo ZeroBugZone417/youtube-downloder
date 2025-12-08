@@ -9,7 +9,7 @@
     "express": "^4.18.2",
     "ytdl-core": "^4.10.0",
     "fluent-ffmpeg": "^2.1.2",
-    "ytsr": "^3.10.1",
+     "@distube/ytsr": "^2.0.4",
     "cors": "^2.8.5"
   }
 }

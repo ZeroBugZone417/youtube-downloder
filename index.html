@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="si">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mova-Nest — YouTube Search & MP3/MP4</title>
+<style>
+  :root{
+    --bg:#f6f8ff; --card:#ffffff; --muted:#6b7280; --accent:#6b21a8;
+    --glass: rgba(255,255,255,0.6);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",sans-serif;
+    background:linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%); color:#0f172a;
+    padding:28px;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:20px}
+  header{display:flex;align-items:center;gap:16px}
+  .logo{
+    width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;
+    box-shadow:0 6px 20px rgba(107,33,168,0.12)
+  }
+  h1{margin:0;font-size:20px}
+  p.lead{margin:6px 0 18px;color:var(--muted);font-size:14px}
+
+  .controls{display:grid;grid-template-columns:1fr 280px;gap:12px;margin-bottom:12px}
+  @media(max-width:760px){ .controls{grid-template-columns:1fr} }
+
+  .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(15,23,42,0.04);
+        border:1px solid rgba(15,23,42,0.04)}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  input[type="text"], select {width:100%;padding:10px;border-radius:8px;border:1px solid #e6edf6;font-size:14px}
+  .row{display:flex;gap:8px;align-items:center}
+  .btn{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+  .btn.secondary{background:#eef2ff;color:var(--accent);border:1px solid rgba(107,33,168,0.06)}
+  small.note{display:block;color:var(--muted);margin-top:10px}
+
+  #results{margin-top:16px;display:grid;gap:10px}
+  .item{display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:10px;border:1px solid #f1f5f9}
+  .thumb{width:120px;height:68px;border-radius:8px;background:#eee;flex:0 0 120px;overflow:hidden}
+  .meta{flex:1}
+  .meta h3{margin:0;font-size:15px}
+  .meta p{margin:6px 0 0;color:var(--muted);font-size:13px}
+  .actions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+  .link-btn{background:#fff;border:1px solid #e6eefb;padding:7px 10px;border-radius:8px;font-size:13px;text-decoration:none;color:var(--accent)}
+  .small-muted{font-size:12px;color:var(--muted);margin-left:6px}
+
+  #playerArea{margin-top:18px;background:linear-gradient(180deg,rgba(109,40,217,0.04),transparent);padding:12px;border-radius:10px}
+  pre.debug{white-space:pre-wrap;background:#0b1220;color:#cfe8ff;padding:12px;border-radius:8px;font-size:12px;overflow:auto}
+
+  .flex-between{display:flex;justify-content:space-between;align-items:center}
+  footer{margin-top:18px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">MN</div>
+      <div>
+        <h1>Mova-Nest — YouTube Search & MP3/MP4</h1>
+        <p class="lead">Search YouTube, preview results and get MP3/MP4 download links using movanest API.</p>
+      </div>
+    </header>
+
+    <div class="controls">
+      <div class="card">
+        <form id="searchForm">
+          <label for="q">Search or paste YouTube URL</label>
+          <div class="row">
+            <input id="q" name="q" type="text" placeholder="e.g. lelena or https://youtu.be/..." autocomplete="off">
+            <button class="btn" id="searchBtn" type="submit">Search</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+            <div style="flex:1">
+              <label for="kind">Action</label>
+              <select id="kind" title="action">
+                <option value="search">Search (ytsearch)</option>
+                <option value="url">Direct URL (ytmp3 / ytmp4)</option>
+              </select>
+            </div>
+            <div style="width:120px">
+              <label for="quality">Quality</label>
+              <input id="quality" placeholder="128 / 360" />
+            </div>
+          </div>
+          <small class="note">Note: If the API supports CORS you will see results inline. If CORS blocks, the page will provide direct API links you can open in a new tab (fallback).</small>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="flex-between">
+          <div>
+            <strong>Quick example links</strong>
+            <div class="small-muted">Try these in new tab</div>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <div><a class="link-btn" href="https://movanest.zone.id/v2/ytsearch?query=lelena" target="_blank">Search: lelena</a></div>
+          <div style="margin-top:8px"><a class="link-btn" href="https://movanest.zone.id/v2/ytmp3?url=https://youtu.be/bTY1wbPHmy0" target="_blank">Example MP3</a></div>
+          <div style="margin-top:8px"><a class="link-btn" href="https://movanest.zone.id/v2/ytmp4?url=https://youtu.be/bTY1wbPHmy0" target="_blank">Example MP4</a></div>
+        </div>
+        <small class="note">If clicking these returns a file/download, your browser will follow the redirect. If JSON appears, inspect fields to use the links.</small>
+      </div>
+    </div>
+
+    <div id="results"></div>
+
+    <div id="playerArea" class="card" style="display:none">
+      <strong>Player / Preview</strong>
+      <div id="playerContent" style="margin-top:8px"></div>
+    </div>
+
+    <div style="margin-top:12px">
+      <details>
+        <summary style="cursor:pointer;padding:8px;border-radius:8px;background:#fff;border:1px solid #eef2ff">Debug / Raw response</summary>
+        <pre id="raw" class="debug">No data yet</pre>
+      </details>
+    </div>
+
+    <footer>Built with movanest.zone.id API • If fetch() is blocked by CORS, use the example links or run a tiny server-side proxy.</footer>
+  </div>
+
+<script>
+/*
+  How this script works (robust/generic):
+  - If user picks "search", calls /v2/ytsearch?query=...
+  - If user picks "url", it will NOT assume the API returns items; it will build direct ytmp3 / ytmp4 links for the provided URL.
+  - Tries to fetch JSON. If fetch fails due to CORS or network, falls back to showing direct API links user can open.
+  - Tries to handle common JSON shapes: array, {result:[]}, {data:[]}, {items:[]}, or single-object responses.
+*/
+
+const API_BASE = 'https://movanest.zone.id/v2';
+
+function el(q, ctx=document){ return ctx.querySelector(q) }
+const form = el('#searchForm');
+const qInput = el('#q');
+const kind = el('#kind');
+const quality = el('#quality');
+const results = el('#results');
+const raw = el('#raw');
+const playerArea = el('#playerArea');
+const playerContent = el('#playerContent');
+
+function clearResults(){ results.innerHTML = ''; playerArea.style.display='none'; playerContent.innerHTML=''; }
+
+function makeLinkBtn(href, text='Open', newTab=true){
+  const a = document.createElement('a');
+  a.className='link-btn';
+  a.href = href;
+  if(newTab) a.target = '_blank';
+  a.textContent = text;
+  return a;
+}
+
+function showFallbackLinksForUrl(videoUrl){
+  clearResults();
+  const card = document.createElement('div');
+  card.className='card';
+  const mp3 = API_BASE + '/ytmp3?url=' + encodeURIComponent(videoUrl) + (quality.value?('&quality='+encodeURIComponent(quality.value)):'');
+  const mp4 = API_BASE + '/ytmp4?url=' + encodeURIComponent(videoUrl) + (quality.value?('&quality='+encodeURIComponent(quality.value)):'');
+  card.innerHTML = <strong>Fallback links (open in new tab)</strong><p class="small-muted">If direct fetch is blocked by CORS, open these links manually.</p>;
+  const d = document.createElement('div');
+  d.style.marginTop='10px';
+  d.appendChild(makeLinkBtn(mp3,'Download MP3'));
+  d.appendChild(document.createTextNode(' '));
+  d.appendChild(makeLinkBtn(mp4,'Download MP4'));
+  card.appendChild(d);
+  results.appendChild(card);
+  raw.textContent = 'MP3: ' + mp3 + '\\nMP4: ' + mp4;
+}
+
+function tryPlayEmbed(videoIdOrUrl){
+  // If it's a youtube id or youtu.be url, we can embed
+  let id = videoIdOrUrl;
+  try{
+    // try to parse
+    if(videoIdOrUrl.includes('youtu')){
+      const u = new URL(videoIdOrUrl);
+      // youtube.com/watch?v=ID  or youtu.be/ID
+      if(u.hostname.includes('youtu.be')) id = u.pathname.slice(1);
+      else id = u.searchParams.get('v') || id;
+    }
+  }catch(e){}
+  if(!id) return;
+  playerArea.style.display='block';
+  playerContent.innerHTML = <iframe width="100%" height="360" src="https://www.youtube.com/embed/${encodeURIComponent(id)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>;
+}
+
+function normalizeItems(obj){
+  // Attempt to extract an array of items from the response
+  if(!obj) return [];
+  if(Array.isArray(obj)) return obj;
+  if(obj.result && Array.isArray(obj.result)) return obj.result;
+  if(obj.data && Array.isArray(obj.data)) return obj.data;
+  if(obj.items && Array.isArray(obj.items)) return obj.items;
+  // sometimes the object itself is a single video description
+  return [obj];
+}
+
+async function doSearch(e){
+  e && e.preventDefault();
+  const q = qInput.value.trim();
+  if(!q){ alert('Search term or URL required'); return; }
+  clearResults();
+  raw.textContent = 'Loading...';
+  // Two modes: search vs direct url
+  if(kind.value === 'url'){
+    // If user provided ? it's likely a full youtube url — we will show direct API links and try a fetch JSON to see if the API returns details
+    showFallbackLinksForUrl(q);
+    // Try to fetch info (some APIs return metadata for a video URL)
+    try{
+      const infoRes = await fetch(API_BASE + '/ytsearch?query=' + encodeURIComponent(q));
+      // if CORS blocked, will throw before here
+      const info = await infoRes.json();
+      raw.textContent = JSON.stringify(info, null, 2);
+      const items = normalizeItems(info);
+      // show items if any
+      if(items.length){
+        items.forEach(it => renderItem(it));
+      } else {
+        // maybe API returns direct download link object
+        renderItem(info);
+      }
+      tryPlayEmbed(q);
+    }catch(err){
+      // CORS or network error — fallback already present
+      raw.textContent = 'Fetch failed (CORS/network). Fallback links provided above. Error: ' + (err && err.message ? err.message : err);
+    }
+    return;
+  }
+
+  // else regular search
+  const url = API_BASE + '/ytsearch?query=' + encodeURIComponent(q);
+  try{
+    const res = await fetch(url);
+    // try to parse as json
+    const data = await res.json();
+    raw.textContent = JSON.stringify(data, null, 2);
+    const items = normalizeItems(data);
+    if(items.length === 0){
+      results.innerHTML = '<div class="card"><em>No results found (API returned no items).</em></div>';
+      return;
+    }
+    // Render upto 15 results
+    items.slice(0,15).forEach(it => renderItem(it));
+  }catch(err){
+    // likely CORS
+    results.innerHTML = '';
+    const c = document.createElement('div');
+    c.className='card';
+    c.innerHTML = `<strong>Could not fetch API from browser (likely CORS)</strong>
+      <p class="small-muted">Open direct search link in new tab to see raw API response:</p>`;
+    const link = API_BASE + '/ytsearch?query=' + encodeURIComponent(q);
+    c.appendChild(makeLinkBtn(link,'Open raw API response'));
+    results.appendChild(c);
+    raw.textContent = 'Fetch failed (CORS/network). Error: ' + (err && err.message ? err.message : err);
+  }
+}
+
+function renderItem(it){
+  // Try many possible field names to be robust:
+  const title = it.title || it.videoTitle || it.name || it.title_simple || it.snippet?.title || 'Untitled';
+  const vid = it.id || it.videoId || it.link || it.url || it.video || (it.video?.id) || null;
+  // thumbnail attempts
+  let thumb = it.thumbnail || it.thumbnails?.[0] || it.thumbnailUrl || it.snippet?.thumbnails?.default?.url || null;
+  if(!thumb && typeof vid === 'string'){
+    // if vid looks like id, construct youtube thumbnail
+    try{
+      let id = vid;
+      if(vid.includes('youtu')) {
+        const u = new URL(vid);
+        if(u.hostname.includes('youtu.be')) id = u.pathname.slice(1);
+        else id = u.searchParams.get('v') || id;
+      }
+      if(id && id.length>=6) thumb = 'https://img.youtube.com/vi/' + id + '/mqdefault.jpg';
+    }catch(e){}
+  }
+
+  const div = document.createElement('div');
+  div.className = 'item';
+  const th = document.createElement('div');
+  th.className='thumb';
+  if(thumb){
+    th.innerHTML = <img src="${thumb}" style="width:100%;height:100%;object-fit:cover" alt="">;
+  } else {
+    th.innerHTML = <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9aa6c0">No image</div>;
+  }
+
+  const meta = document.createElement('div');
+  meta.className='meta';
+  const h = document.createElement('h3'); h.textContent = title;
+  const p = document.createElement('p'); p.textContent = (it.author || it.channel || it.uploader || '') + (vid ? (' • ' + (typeof vid === 'string' ? vid : '')) : '');
+  const actions = document.createElement('div'); actions.className='actions';
+
+  // MP3 / MP4 links (constructed)
+  const mp3link = API_BASE + '/ytmp3?url=' + encodeURIComponent( vid || title || '' ) + (quality.value?('&quality='+encodeURIComponent(quality.value)):'');
+  const mp4link = API_BASE + '/ytmp4?url=' + encodeURIComponent( vid || title || '' ) + (quality.value?('&quality='+encodeURIComponent(quality.value)):'');
+
+  actions.appendChild(makeLinkBtn(mp3link,'MP3'));
+  actions.appendChild(makeLinkBtn(mp4link,'MP4'));
+  // raw JSON view for the item
+  const dbg = document.createElement('button'); dbg.className='link-btn secondary'; dbg.textContent='JSON';
+  dbg.onclick = ()=>{ alert(JSON.stringify(it, null, 2)); };
+  actions.appendChild(dbg);
+
+  // preview play if youtube url or id exists
+  if(vid){
+    const play = document.createElement('button'); play.className='link-btn'; play.textContent='Preview';
+    play.onclick = () => {
+      // if vid looks like url or id, embed youtube. Otherwise, try to fetch MP4/MP3 link and play
+      tryPlayEmbed(vid);
+    }
+    actions.appendChild(play);
+  }
+
+  meta.appendChild(h);
+  meta.appendChild(p);
+  meta.appendChild(actions);
+
+  div.appendChild(th);
+  div.appendChild(meta);
+  results.appendChild(div);
+}
+
+form.addEventListener('submit', doSearch);
+
+// nice: perform example search if query param present in URL
+(function initFromQuery(){
+  const u = new URL(location.href);
+  const q = u.searchParams.get('q');
+  if(q){ qInput.value = q; kind.value='search'; doSearch(); }
+})();
+</script>
+</body>
+</html>

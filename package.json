@@ -1,15 +1,26 @@
 {
-  "name": "youtube-mp3-downloader",
+  "name": "youtube-mp3-downloader-npm",
   "version": "1.0.0",
-  "description": "YouTube to MP3 downloader using Node.js and yt-dlp",
+  "description": "YouTube to MP3 downloader using Node.js only (ytdl-core + yt-search) with song search support",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
+  "keywords": [
+    "youtube",
+    "mp3",
+    "downloader",
+    "ytdl-core",
+    "yt-search",
+    "nodejs"
+  ],
+  "author": "Your Name",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "ytdl-core": "^4.11.0",
+    "yt-search": "^2.10.4"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

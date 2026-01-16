@@ -1,172 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ULTIMATE DOWNLOADER | BLACK MATRIX DEV</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap');
-
-:root {
-    --primary-color: #ff0000;
-    --text-glow: #ff0000;
-}
-
-body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
-    color: white;
-    min-height: 100vh;
-}
-h1,h2,h3,h4,h5,h6 { font-family: 'Orbitron', sans-serif; }
-.glow { text-shadow:0 0 8px var(--text-glow),0 0 16px var(--text-glow),0 0 24px var(--text-glow);}
-.btn-glow { transition:all 0.3s ease; box-shadow:0 0 10px rgba(255,0,0,0.6);}
-.btn-glow:hover { transform:translateY(-2px); box-shadow:0 0 20px rgba(255,0,0,0.8);}
-.result-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius:15px; border:1px solid rgba(255,0,0,0.2);}
-.loading-spinner { border-radius:50%; border:4px solid #fff; border-top:4px solid var(--primary-color); width:48px; height:48px; animation: spin 1s linear infinite;}
-@keyframes spin { 0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);} }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTIMATE DOWNLOADER | BLACK MATRIX DEV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+        :root { --primary-color: #ff0000; --text-glow: #ff0000; }
+        body { font-family: 'Montserrat', sans-serif; background: #000; color: white; min-height: 100vh; }
+        h1, h2 { font-family: 'Orbitron', sans-serif; }
+        .glow { text-shadow: 0 0 10px var(--text-glow); }
+        .btn-glow { transition: all 0.3s ease; box-shadow: 0 0 10px rgba(255,0,0,0.4); }
+        .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(255,0,0,0.7); }
+        .result-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255,0,0,0.2); }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #ff0000; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .tab-active { border-bottom: 3px solid #ff0000; color: #ff0000; }
+    </style>
 </head>
-<body class="overflow-x-hidden">
+<body class="p-4 md:p-10">
 
-<header class="text-center px-4 py-6 md:py-10">
-    <div class="flex flex-col md:flex-row items-center justify-center mb-4">
-        <img src="https://github.com/ZeroBugZone417/tiktokdown/blob/main/logo.png?raw=true" 
-             alt="Logo" class="w-20 h-20 md:w-28 md:h-28 rounded-full glow">
-        <h1 class="text-3xl md:text-5xl font-bold glow mt-3 md:mt-0 md:ml-5 uppercase tracking-tighter">Black Matrix DL</h1>
+    <header class="text-center mb-10">
+        <h1 class="text-3xl md:text-5xl font-bold glow mb-2 uppercase tracking-tighter">Black Matrix DL</h1>
+        <p class="text-gray-400 text-sm">Universal YouTube & TikTok Downloader</p>
+    </header>
+
+    <div class="max-w-md mx-auto flex justify-center gap-8 mb-8 border-b border-white/10 pb-2">
+        <button onclick="switchMode('youtube')" id="yt-tab" class="font-bold tab-active transition-all">YOUTUBE</button>
+        <button onclick="switchMode('tiktok')" id="tt-tab" class="font-bold text-gray-500 transition-all">TIKTOK</button>
     </div>
-    <p class="text-gray-300 text-sm md:text-base">Download TikTok & YouTube Videos Instantly</p>
-</header>
 
-<div class="max-w-2xl mx-auto flex flex-col md:flex-row gap-3 px-4 mb-10">
-    <input type="text" id="media-url" placeholder="Paste YouTube or TikTok URL here..." 
-           class="flex-grow px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all">
-    <button id="download-btn" 
-            class="px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-medium btn-glow flex items-center justify-center transition-all">
-        <i class="fas fa-bolt mr-2"></i> GET LINK
-    </button>
-</div>
+    <div class="max-w-2xl mx-auto flex flex-col md:flex-row gap-3 mb-10">
+        <input type="text" id="urlInput" placeholder="Paste YouTube Link..." 
+               class="flex-grow px-4 py-4 rounded-lg bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-red-500 transition-all">
+        <button onclick="processDownload()" id="btnText" 
+                class="px-8 py-4 bg-red-600 hover:bg-red-700 rounded-lg font-bold btn-glow flex items-center justify-center">
+            DOWNLOAD
+        </button>
+    </div>
 
-<div id="loading" class="hidden flex justify-center mb-10"><div class="loading-spinner"></div></div>
+    <div id="loading" class="hidden flex justify-center mb-10"><div class="loader"></div></div>
 
-<div id="results" class="hidden max-w-3xl mx-auto px-4 mb-10">
-    <div class="result-card p-6 flex flex-col md:flex-row gap-5">
-        <div class="md:w-1/3">
-            <img id="media-thumb" src="" class="rounded-lg w-full shadow-lg border border-white/10">
-        </div>
-        <div class="md:w-2/3 flex flex-col justify-between">
-            <div>
-                <span id="platform-tag" class="px-2 py-1 rounded text-[10px] font-bold mb-2 inline-block uppercase tracking-widest bg-red-600">YT</span>
-                <h2 id="media-title" class="text-lg md:text-xl font-bold mb-2"></h2>
-                <p id="media-info" class="text-gray-400 mb-4 text-sm"></p>
+    <div id="resultArea" class="hidden max-w-3xl mx-auto">
+        <div class="result-card p-6 flex flex-col md:flex-row gap-6">
+            <div class="md:w-1/3">
+                <img id="thumb" src="" class="rounded-lg w-full shadow-2xl border border-white/10">
             </div>
-            
-            <div id="btn-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-                </div>
+            <div class="md:w-2/3">
+                <span id="platformTag" class="text-[10px] font-bold px-2 py-1 rounded mb-2 inline-block"></span>
+                <h2 id="videoTitle" class="text-xl font-bold mb-4 line-clamp-2 uppercase">Video Title</h2>
+                <div id="downloadButtons" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    </div>
+            </div>
         </div>
     </div>
-</div>
 
-<footer class="mt-16 border-t border-red-600/20 py-10 text-center">
-    <h2 class="text-lg font-bold text-red-500 glow tracking-widest">BLACK MATRIX DEV</h2>
-    <p class="text-gray-500 text-xs mt-4">© 2026 Developed by Dineth Sudarshana</p>
-</footer>
+    <script>
+        let currentMode = 'youtube';
 
-<script>
-const downloadBtn = document.getElementById('download-btn');
-const inputField = document.getElementById('media-url');
-const loading = document.getElementById('loading');
-const results = document.getElementById('results');
-
-downloadBtn.addEventListener('click', async () => {
-    const url = inputField.value.trim();
-    if (!url) return alert('Please paste a link!');
-
-    loading.classList.remove('hidden');
-    results.classList.add('hidden');
-
-    try {
-        if (url.includes('tiktok.com')) {
-            await fetchTikTok(url);
-        } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            await fetchYouTube(url);
-        } else {
-            alert('Invalid Link! Use TikTok or YouTube URL.');
-            loading.classList.add('hidden');
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('urlInput').placeholder = mode === 'youtube' ? "Paste YouTube Link..." : "Paste TikTok Link...";
+            document.getElementById('yt-tab').className = mode === 'youtube' ? 'font-bold tab-active' : 'font-bold text-gray-500';
+            document.getElementById('tt-tab').className = mode === 'tiktok' ? 'font-bold tab-active' : 'font-bold text-gray-500';
+            document.getElementById('resultArea').classList.add('hidden');
         }
-    } catch (error) {
-        alert('Error fetching data. Check your connection.');
-        loading.classList.add('hidden');
-    }
-});
 
-async function fetchTikTok(url) {
-    const res = await fetch(`https://tikwm.com/api/?url=${encodeURIComponent(url)}`);
-    const data = await res.json();
-    
-    if (data.code === 0) {
-        showResults({
-            title: data.data.title || 'TikTok Video',
-            thumb: data.data.cover,
-            info: `By ${data.data.author.nickname}`,
-            tag: 'TikTok',
-            tagColor: 'bg-pink-600',
-            links: [
-                { text: 'No Watermark', url: data.data.play, color: 'bg-green-600' },
-                { text: 'With Watermark', url: data.data.wmplay, color: 'bg-blue-600' },
-                { text: 'Download MP3', url: data.data.music, color: 'bg-yellow-600' }
-            ]
-        });
-    }
-}
+        async function processDownload() {
+            const input = document.getElementById('urlInput').value;
+            const btnText = document.getElementById('btnText');
+            const loader = document.getElementById('loading');
+            const resultArea = document.getElementById('resultArea');
 
-async function fetchYouTube(url) {
-    // YouTube API Endpoint (Using MovaNest structure)
-    const baseUrl = `https://www.movanest.xyz/v2/ytdl2?input=${encodeURIComponent(url)}`;
-    
-    showResults({
-        title: "YouTube Media",
-        thumb: "https://img.youtube.com/vi/placeholder/hqdefault.jpg", // Placeholder
-        info: "YouTube Video Downloader",
-        tag: 'YouTube',
-        tagColor: 'bg-red-600',
-        links: [
-            { text: '360p (MP4)', url: baseUrl + "&format=360p", color: 'bg-slate-700' },
-            { text: '720p (HD)', url: baseUrl + "&format=720p", color: 'bg-blue-600' },
-            { text: '1080p (Full HD)', url: baseUrl + "&format=1080p", color: 'bg-red-600' },
-            { text: 'Audio (MP3)', url: baseUrl + "&format=audio", color: 'bg-purple-600' }
-        ]
-    });
-}
+            if (!input) return alert("Please paste a link first!");
 
-function showResults(item) {
-    document.getElementById('media-title').textContent = item.title;
-    document.getElementById('media-thumb').src = item.thumb;
-    document.getElementById('media-info').textContent = item.info;
-    
-    const tag = document.getElementById('platform-tag');
-    tag.textContent = item.tag;
-    tag.className = `px-2 py-1 rounded text-[10px] font-bold mb-2 inline-block uppercase tracking-widest ${item.tagColor}`;
+            btnText.disabled = true;
+            btnText.textContent = "Fetching...";
+            loader.classList.remove('hidden');
+            resultArea.classList.add('hidden');
 
-    const container = document.getElementById('btn-container');
-    container.innerHTML = '';
+            try {
+                if (currentMode === 'youtube') {
+                    const baseUrl = `https://www.movanest.xyz/v2/ytdl2?input=${encodeURIComponent(input)}`;
+                    // YouTube වලට metadata ගන්න වෙනම API එකක් නැති නිසා placeholder එකක් දමමි
+                    renderResults("YouTube Video Content", "https://img.youtube.com/vi/placeholder/hqdefault.jpg", [
+                        { text: "360p (MP4)", url: baseUrl + "&format=360p", color: "bg-gray-800" },
+                        { text: "720p (HD)", url: baseUrl + "&format=720p", color: "bg-blue-600" },
+                        { text: "1080p (FHD)", url: baseUrl + "&format=1080p", color: "bg-red-600" },
+                        { text: "Audio (MP3)", url: baseUrl + "&format=audio", color: "bg-purple-600" }
+                    ], "YOUTUBE", "bg-red-600 text-white");
+                    
+                } else {
+                    const ttApiUrl = `https://www.movanest.xyz/v2/tiktok?input=${encodeURIComponent(input)}`;
+                    renderResults("TikTok Video Content", "https://placehold.co/400x600/000/fff?text=TikTok+Video", [
+                        { text: "No Watermark", url: ttApiUrl, color: "bg-green-600" },
+                        { text: "Download Audio", url: ttApiUrl + "&format=audio", color: "bg-gray-800" }
+                    ], "TIKTOK", "bg-pink-600 text-white");
+                }
+            } catch (error) {
+                alert("Something went wrong. Check link!");
+            } finally {
+                btnText.disabled = false;
+                btnText.textContent = "DOWNLOAD";
+                loader.classList.add('hidden');
+            }
+        }
 
-    item.links.forEach(link => {
-        const a = document.createElement('a');
-        a.href = link.url;
-        a.target = "_blank";
-        a.textContent = link.text;
-        a.className = `px-4 py-2 ${link.color} hover:opacity-80 rounded-lg font-medium text-center transition-all text-sm`;
-        container.appendChild(a);
-    });
+        function renderResults(title, thumbnail, buttons, tagText, tagClass) {
+            const resultArea = document.getElementById('resultArea');
+            document.getElementById('videoTitle').textContent = title;
+            document.getElementById('thumb').src = thumbnail;
+            
+            const tag = document.getElementById('platformTag');
+            tag.textContent = tagText;
+            tag.className = `text-[10px] font-bold px-2 py-1 rounded mb-2 inline-block ${tagClass}`;
+            
+            const btnContainer = document.getElementById('downloadButtons');
+            btnContainer.innerHTML = ''; 
 
-    loading.classList.add('hidden');
-    results.classList.remove('hidden');
-}
-</script>
+            buttons.forEach(btn => {
+                const a = document.createElement('a');
+                a.href = btn.url;
+                a.target = "_blank";
+                a.textContent = btn.text;
+                a.className = `text-center ${btn.color} hover:opacity-80 text-white py-3 rounded-lg font-bold transition-all text-sm uppercase`;
+                btnContainer.appendChild(a);
+            });
 
+            resultArea.classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
